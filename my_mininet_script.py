@@ -1,62 +1,41 @@
-import sys
+#!/usr/bin/env python
+
 from mininet.net import Mininet
-from mininet.node import CPULimitedHost
+from mininet.node import Controller, OVSKernelSwitch, CPULimitedHost
 from mininet.link import TCLink
+from mininet.topo import SingleSwitchTopo, LinearTopo, TreeTopo, MeshTopo
+import sys
 
-def create_network_topology(topology, n):
-    if topology == "linear":
-        create_linear_topology(n)
-    elif topology == "tree":
-        create_tree_topology(n)
-    elif topology == "mesh":
-        create_mesh_topology(n)
-    else:
-        print("Invalid topology. Available options are: linear, tree, mesh")
+if len(sys.argv) != 3:
+    print("Usage: python runmininet.py <topology> <n>")
+    print("  topology: single, linear, tree, mesh")
+    print("  n: number of nodes")
+    sys.exit(1)
 
-def create_linear_topology(n):
-    net = Mininet(host=CPULimitedHost, link=TCLink)
-    hosts = [net.addHost('h%s' % i, cpu=.5/n) for i in range(1, n+1)]
-    switches = [net.addSwitch('s%s' % i) for i in range(1, n)]
-    for i in range(n-1):
-        net.addLink(switches[i], switches[i+1], bw=10, delay='5ms', loss=10, max_queue_size=1000)
-    for i in range(n):
-        net.addLink(hosts[i], switches[i], bw=10, delay='5ms', loss=10, max_queue_size=1000)
-    net.start()
-    net.pingAll()
-    net.stop()
+topology = sys.argv[1]
+n = int(sys.argv[2])
 
-def create_tree_topology(n):
-    net = Mininet(host=CPULimitedHost, link=TCLink)
-    hosts = [net.addHost('h%s' % i, cpu=.5/n) for i in range(1, n+1)]
-    switches = [net.addSwitch('s%s' % i) for i in range(1, n)]
-    for i in range(n-1):
-        net.addLink(switches[i], switches[i+1], bw=10, delay='5ms', loss=10, max_queue_size=1000)
-    for i in range(1, n):
-        net.addLink(switches[i], switches[i//2], bw=10, delay='5ms', loss=10, max_queue_size=1000)
-    for i in range(n):
-        net.addLink(hosts[i], switches[i], bw=10, delay='5ms', loss=10, max_queue_size=1000)
-    net.start()
-    net.pingAll()
-    net.stop()
+if topology == "single":
+    topo = SingleSwitchTopo(n)
+elif topology == "linear":
+    topo = LinearTopo(n)
+elif topology == "tree":
+    topo = TreeTopo(n)
+elif topology == "mesh":
+    topo = MeshTopo(n)
+else:
+    print("Invalid topology. Please choose from single, linear, tree, or mesh.")
+    sys.exit(1)
 
-def create_mesh_topology(n):
-    net = Mininet(host=CPULimitedHost, link=TCLink)
-    hosts = [net.addHost('h%s' % i, cpu=.5/n) for i in range(1, n+1)]
-    switches = [net.addSwitch('s%s' % i) for i in range(1, n+1)]
-    for i in range(n):
-        for j in range(n):
-            if i != j:
-                net.addLink(switches[i], switches[j], bw=10, delay='5ms', loss=10, max_queue_size=1000)
-    for i in range(n):
-        net.addLink(hosts[i], switches[i+1], bw=10, delay='5ms', loss=10, max_queue_size=1000)
-    net.start()
-    net.pingAll()
-    net.stop()
+net = Mininet(topo=topo, controller=Controller, switch=OVSKernelSwitch, link=TCLink)
 
-if name == 'main':
-    if len(sys.argv) != 3:
-        print("Usage: runmininet.py [linear|tree|mesh] [n]")
-    else:
-        topology = sys.argv[1]
-        n = int(sys.argv[2])
-        create_network_topology(topology, n)
+for host in net.hosts:
+    host.setCPUFraction(0.5 / n)
+
+for link in net.links:
+    link.intf1.config(bw=10, delay='5ms', loss=10, max_queue_size=1000)
+    link.intf2.config(bw=10, delay='5ms', loss=10, max_queue_size=1000)
+
+net.start()
+net.pingAll()
+net.stop()
