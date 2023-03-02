@@ -37,19 +37,28 @@ class TreeTopo(Topo):
         Topo.__init__(self,**opts)
         
         # Add switches to the topology
-        switches = [self.addSwitch(f's{i+1}') for i in range(n)]
+        switches = []
+        for i in range(n):
+            switch = self.addSwitch(f's{i+1}')
+            switches.append(switch)
+            # Add child switches to the switch
+            if i < n-1:
+                for j in range(2):
+                    child_switch = self.addSwitch(f's{(i+1)*2+j}')
+                    switches.append(child_switch)
+                    self.addLink(child_switch, switch, bw=10, delay='5ms', loss=10, max_queue_size=1000)
+            # Add hosts to the switch
+            else:
+                for j in range(2):
+                    host = self.addHost(f'h{i*2+j+1}', cpu=.5/(2*n))
+                    self.addLink(host, switch, bw=10, delay='5ms', loss=10, max_queue_size=1000)
         
-        # Add hosts to the topology
-        hosts = [self.addHost(f'h{j+1}', cpu=.5/n) for j in range(n)]
-        
-        # Add links between the root switch and hosts
-        for h in hosts:
-            self.addLink(h, switches[0], bw=10, delay='5ms', loss=10, max_queue_size=1000)
-        
-        # Add links between switches
-        for i in range(n//2):
-            self.addLink(switches[i], switches[2*i+1], bw=10, delay='5ms', loss=10, max_queue_size=1000)
-            self.addLink(switches[i], switches[2*i+2], bw=10, delay='5ms', loss=10, max_queue_size=1000)
+        # Connect switches in a tree structure
+        for i in range(1, n):
+            parent = switches[(i-1)//2]
+            child = switches[i]
+            self.addLink(parent, child, bw=10, delay='5ms', loss=10, max_queue_size=1000)
+
 
 class MeshTopo(Topo):
     def __init__(self,n=2,**opts):
