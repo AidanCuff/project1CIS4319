@@ -33,34 +33,23 @@ class LinearTopo(Topo):
                 self.addLink(switches[i], switches[i+1], bw=10, delay='5ms', loss=10, max_queue_size=1000)
 
 class TreeTopo(Topo):
-    def __init__(self,n=2,**opts):
-        Topo.__init__(self,**opts)
-        
-        # Add root switch to the topology
+    def __init__(self, n=2, **opts):
+        Topo.__init__(self, **opts)
         root_switch = self.addSwitch('s1')
-        
-        # Add child switches and hosts to the topology
-        switch_count = 1
-        host_count = 1
-        for i in range(n):
-            parent_switch_count = switch_count
-            switch_count *= 2
-            
-            for j in range(parent_switch_count):
-                switch = self.addSwitch(f's{switch_count-j}')
-                self.addLink(switch, root_switch, bw=10, delay='5ms', loss=10, max_queue_size=1000)
-                
-                if i == n-1:
-                    for k in range(2):
-                        host = self.addHost(f'h{host_count}')
-                        host_count += 1
-                        self.addLink(host, switch, bw=10, delay='5ms', loss=10, max_queue_size=1000)
-        
-        # Connect switches in a tree structure
-        for i in range(1, switch_count):
-            parent = self.getNodeByDPID(f'000000000000000{i//2:02x}')
-            child = self.getNodeByDPID(f'000000000000000{i:02x}')
-            self.addLink(parent, child, bw=10, delay='5ms', loss=10, max_queue_size=1000)
+        self._add_tree(root_switch, n, 2)
+
+    def _add_tree(self, parent, n, child_count):
+        if n == 0:
+            return
+        for i in range(child_count):
+            if n == 1:
+                for j in range(2):
+                    host = self.addHost(f'h{2 * i + j + 1}')
+                    self.addLink(host, parent, bw=10, delay='5ms', loss=10, max_queue_size=1000)
+            else:
+                child = self.addSwitch(f's{(parent.dpid & 0xffff) << 8 | i + 1}')
+                self.addLink(child, parent, bw=10, delay='5ms', loss=10, max_queue_size=1000)
+                self._add_tree(child, n - 1, child_count)
 
 
 
