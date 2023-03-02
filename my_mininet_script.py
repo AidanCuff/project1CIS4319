@@ -12,8 +12,8 @@ class SingleSwitchTopo(Topo):
         Topo.__init__(self,**opts)
         switch = self.addSwitch('s1')
 
-        for h in range(n):
-            host = self.addHost('h%s'%(h+1,cpu=.5/n))
+        hosts = [self.addHost(f'h{i+1}',cpu=.5/n) for i in range(n)]:
+        for j in range(n):
             self.addLink(host, switch,bw=10, delay='5ms', loss=10, max_queue_size=1000)
             
 class LinearTopo(Topo):
@@ -54,7 +54,18 @@ class TreeTopo(Topo):
 
 
 def simpleTest():
-    topo = SingleSwitchTopo(n=3)
+    match sys.argv[1]:
+        case "single":
+            topo = SingleSwitchTopo(sys.argv[2])
+        case "linear":
+            topo = LinearTopo(sys.argv[2])
+        case "tree":
+            topo = treeTopo(sys.argv[2])
+        #case "mesh":
+            #topo = SingleSwitchTopo(sys.argv[2])
+        case _:
+            print("unknown topology")
+        
     net = Mininet(topo)
     net.start()
     print("dumping host connections")
@@ -72,7 +83,7 @@ def simpleTest():
     net.pingAll();
     net.stop()
 
-    topo = TreeTopo(n=3)
+    topo = TreeTopo(n=2)
     net = Mininet(topo)
     net.start()
     print("dumping host connections")
