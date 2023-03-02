@@ -51,6 +51,25 @@ class TreeTopo(Topo):
             self.addLink(switches[i], switches[2*i+1], bw=10, delay='5ms', loss=10, max_queue_size=1000)
             self.addLink(switches[i], switches[2*i+2], bw=10, delay='5ms', loss=10, max_queue_size=1000)
 
+class MeshTopo(Topo):
+    def __init__(self,n=2,**opts):
+        Topo.__init__(self,**opts)
+        
+        # Add switches to the topology
+        switches = [self.addSwitch(f's{i+1}') for i in range(n)]
+        
+        # Add hosts to the topology
+        hosts = [self.addHost(f'h{j+1}', cpu=.5/n) for j in range(n)]
+        
+        # Add links between hosts and switches
+        for i in range(n):
+            for j in range(n):
+                self.addLink(hosts[i], switches[j], bw=10, delay='5ms', loss=10, max_queue_size=1000)
+        
+        # Add links between switches
+        for i in range(n):
+            for j in range(i+1, n):
+                self.addLink(switches[i], switches[j], bw=10, delay='5ms', loss=10, max_queue_size=1000)
 
 
 def simpleTest():
@@ -59,30 +78,12 @@ def simpleTest():
     if sys.argv[1] =="linear":
             topo = LinearTopo(int(sys.argv[2]))
     if sys.argv[1] =="tree":
-            topo = treeTopo(int(sys.argv[2]))
-        #case "mesh":
-            #topo = SingleSwitchTopo(int(sys.argv[2]))
+            topo = TreeTopo(int(sys.argv[2]))
+    if sys.argv[1] =="mesh":
+            topo = MeshTopo(int(sys.argv[2]))
     else:
             print("unknown topology")
         
-    net = Mininet(topo)
-    net.start()
-    print("dumping host connections")
-    dumpNodeConnections(net.hosts)
-    print("Testing network connectivity")
-    net.pingAll();
-    net.stop()
-
-    topo = LinearTopo(n=3)
-    net = Mininet(topo)
-    net.start()
-    print("dumping host connections")
-    dumpNodeConnections(net.hosts)
-    print("Testing network connectivity")
-    net.pingAll();
-    net.stop()
-
-    topo = TreeTopo(n=2)
     net = Mininet(topo)
     net.start()
     print("dumping host connections")
