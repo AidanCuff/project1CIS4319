@@ -31,28 +31,53 @@ class LinearTopo(Topo):
             self.addLink(hosts[i], switches[i], bw=10, delay='5ms', loss=10, max_queue_size=1000)
             if i < n-1:
                 self.addLink(switches[i], switches[i+1], bw=10, delay='5ms', loss=10, max_queue_size=1000)
+                
+class Node:
+    def __init__(self, val):
+        self.val = val
+        self.left = None
+        self.right = None
+
+def create_perfect_binary_tree(depth):
+    if depth == 0:
+        return None
+    root = Node("X")
+    root.left = create_perfect_binary_tree(depth-1)
+    root.right = create_perfect_binary_tree(depth-1)
+    return root
 
 class TreeTopo(Topo):
-    def __init__(self, n=2, **opts):
-        Topo.__init__(self, **opts)
-        root_switch = self.addSwitch('s1')
-        self._add_tree(root_switch, n, 2,0)
-
-    def _add_tree(self, parent, n, child_count,host_count):
-        if n == 0:
-            return
-        hc = 0
-        for i in range(1,child_count+1):
-            if n == 1:
-                for j in range(2):
-                    hc+=1
-                    host = self.addHost(f'h{hc}')
-                    if i > hc:
-                        self.addLink(host, parent, bw=10, delay='5ms', loss=10, max_queue_size=1000)
+    def __init__(self, depth):
+        Topo.__init__(self)
+        
+        # Create a perfect binary tree of switches and hosts
+        self._add_nodes(depth)
+        
+        # Connect the switches and hosts according to the binary tree structure
+        self._connect_nodes()
+    
+    def _add_nodes(self, depth, node=None):
+        if node is None:
+            node = create_perfect_binary_tree(depth)
+        if node is not None:
+            if node.left is None and node.right is None:
+                host = self.addHost(f"h{node.val}")
             else:
-                child = self.addSwitch(f's{i+1}')
-                self.addLink(child, parent, bw=10, delay='5ms', loss=10, max_queue_size=1000)
-                self._add_tree(child, n - 1, child_count,host_count+hc)
+                host = self.addSwitch(f"s{node.val}", cls=OVSSwitch)
+                self._add_nodes(depth-1, node.left)
+                self._add_nodes(depth-1, node.right)
+            self.nodes[node] = host
+    
+    def _connect_nodes(self, node=None):
+        if node is None:
+            node = create_perfect_binary_tree(depth)
+        if node is not None:
+            if node.left is not None:
+                self.addLink(self.nodes[node], self.nodes[node.left])
+                self._connect_nodes(node.left)
+            if node.right is not None:
+                self.addLink(self.nodes[node], self.nodes[node.right])
+                self._connect_nodes(node.right)
 
 
 class MeshTopo(Topo):
