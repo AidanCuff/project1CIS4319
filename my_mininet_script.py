@@ -1,41 +1,31 @@
-#!/usr/bin/env python
-
+from mininet.topo import Topo
 from mininet.net import Mininet
-from mininet.node import Controller, OVSKernelSwitch, CPULimitedHost
+from mininet.util import dumpNodeConenctions
+from mininet.log import setLogLevel
+from mininet.node import CPULimitedHost
 from mininet.link import TCLink
-from mininet.topo import SingleSwitchTopo, LinearTopo, TreeTopo, MeshTopo
 import sys
 
-if len(sys.argv) != 3:
-    print("Usage: python runmininet.py <topology> <n>")
-    print("  topology: single, linear, tree, mesh")
-    print("  n: number of nodes")
-    sys.exit(1)
 
-topology = sys.argv[1]
-n = int(sys.argv[2])
+class SingleSwitchTopo(Topo):
+    def __init__(self,n=2,**opts):
+        Topo.__init__(self,**opts)
+        switch = self.addSwitch('s1')
 
-if topology == "single":
-    topo = SingleSwitchTopo(n)
-elif topology == "linear":
-    topo = LinearTopo(n)
-elif topology == "tree":
-    topo = TreeTopo(n)
-elif topology == "mesh":
-    topo = MeshTopo(n)
-else:
-    print("Invalid topology. Please choose from single, linear, tree, or mesh.")
-    sys.exit(1)
+        for h in range(n):
+            host = self.addHost('h%s'%(h+1))
+            self.addLink(host, switch,bw=10, delay='5ms', loss=10, max_queue_size=1000)
 
-net = Mininet(topo=topo, controller=Controller, switch=OVSKernelSwitch, link=TCLink)
+def simpleTest():
+    topo = SingleSwitchTopo(n=3)
+    net = Mininet(topo)
+    net.start()
+    print("dumping host connections")
+    dumpNodeConnections(net.hosts)
+    print("Testing network connectivity")
+    net.pingAll();
+    net.stop()
 
-for host in net.hosts:
-    host.setCPUFraction(0.5 / n)
-
-for link in net.links:
-    link.intf1.config(bw=10, delay='5ms', loss=10, max_queue_size=1000)
-    link.intf2.config(bw=10, delay='5ms', loss=10, max_queue_size=1000)
-
-net.start()
-net.pingAll()
-net.stop()
+if __name__=='__main__':
+    setLogLevel('info')
+    simpleTest()
