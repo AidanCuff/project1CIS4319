@@ -72,6 +72,15 @@ def simpleTest():
     net.pingAll();
     net.stop()
 
+    topo = TreeTopo(n=3)
+    net = Mininet(topo)
+    net.start()
+    print("dumping host connections")
+    dumpNodeConnections(net.hosts)
+    print("Testing network connectivity")
+    net.pingAll();
+    net.stop()
+
 if __name__=='__main__':
     setLogLevel('info')
     simpleTest()
