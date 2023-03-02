@@ -63,8 +63,7 @@ class MeshTopo(Topo):
         
         # Add links between hosts and switches
         for i in range(n):
-            for j in range(n):
-                self.addLink(hosts[i], switches[j], bw=10, delay='5ms', loss=10, max_queue_size=1000)
+            self.addLink(hosts[i], switches[i], bw=10, delay='5ms', loss=10, max_queue_size=1000)
         
         # Add links between switches
         for i in range(n):
