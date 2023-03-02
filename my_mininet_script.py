@@ -41,7 +41,7 @@ class TreeTopo(Topo):
     def _add_tree(self, parent, n, child_count):
         if n == 0:
             return
-        for i in range(child_count):
+        for i in range(1,child_count+1):
             if n == 1:
                 for j in range(2):
                     host = self.addHost(f'h{2 * i + j + 1}')
