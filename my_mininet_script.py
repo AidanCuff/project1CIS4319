@@ -36,28 +36,32 @@ class TreeTopo(Topo):
     def __init__(self,n=2,**opts):
         Topo.__init__(self,**opts)
         
-        # Add switches to the topology
-        switches = []
+        # Add root switch to the topology
+        root_switch = self.addSwitch('s1')
+        
+        # Add child switches and hosts to the topology
+        switch_count = 1
+        host_count = 1
         for i in range(n):
-            switch = self.addSwitch(f's{i+1}')
-            switches.append(switch)
-            # Add child switches to the switch
-            if i < n-1:
-                for j in range(2):
-                    child_switch = self.addSwitch(f's{(i+1)*2+j}')
-                    switches.append(child_switch)
-                    self.addLink(child_switch, switch, bw=10, delay='5ms', loss=10, max_queue_size=1000)
-            # Add hosts to the switch
-            else:
-                for j in range(2):
-                    host = self.addHost(f'h{i*2+j+1}', cpu=.5/(2*n))
-                    self.addLink(host, switch, bw=10, delay='5ms', loss=10, max_queue_size=1000)
+            parent_switch_count = switch_count
+            switch_count *= 2
+            
+            for j in range(parent_switch_count):
+                switch = self.addSwitch(f's{switch_count-j}')
+                self.addLink(switch, root_switch, bw=10, delay='5ms', loss=10, max_queue_size=1000)
+                
+                if i == n-1:
+                    for k in range(2):
+                        host = self.addHost(f'h{host_count}')
+                        host_count += 1
+                        self.addLink(host, switch, bw=10, delay='5ms', loss=10, max_queue_size=1000)
         
         # Connect switches in a tree structure
-        for i in range(1, n):
-            parent = switches[(i-1)//2]
-            child = switches[i]
+        for i in range(1, switch_count):
+            parent = self.getNodeByDPID(f'000000000000000{i//2:02x}')
+            child = self.getNodeByDPID(f'000000000000000{i:02x}')
             self.addLink(parent, child, bw=10, delay='5ms', loss=10, max_queue_size=1000)
+
 
 
 class MeshTopo(Topo):
