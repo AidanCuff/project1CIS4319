@@ -36,7 +36,7 @@ class TreeTopo(Topo):
     def __init__(self, n=2, **opts):
         Topo.__init__(self, **opts)
         root_switch = self.addSwitch('s1')
-        self._add_tree(root_switch, n, 2)
+        self._add_tree(root_switch, n, 2,0)
 
     def _add_tree(self, parent, n, child_count,host_count):
         if n == 0:
