@@ -12,7 +12,7 @@ class SingleSwitchTopo(Topo):
         Topo.__init__(self,**opts)
         switch = self.addSwitch('s1')
 
-        hosts = [self.addHost(f'h{i+1}',cpu=.5/n) for i in range(n)]:
+        hosts = [self.addHost(f'h{i+1}',cpu=.5/n) for i in range(n)]
         for j in range(n):
             self.addLink(host, switch,bw=10, delay='5ms', loss=10, max_queue_size=1000)
             
