@@ -47,7 +47,8 @@ class TreeTopo(Topo):
                 for j in range(2):
                     hc+=1
                     host = self.addHost(f'h{hc}')
-                    self.addLink(host, parent, bw=10, delay='5ms', loss=10, max_queue_size=1000)
+                    if i > hc:
+                        self.addLink(host, parent, bw=10, delay='5ms', loss=10, max_queue_size=1000)
             else:
                 child = self.addSwitch(f's{i+1}')
                 self.addLink(child, parent, bw=10, delay='5ms', loss=10, max_queue_size=1000)
