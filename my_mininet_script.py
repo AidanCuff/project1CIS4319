@@ -50,34 +50,30 @@ class TreeTopo(Topo):
     def __init__(self, depth):
         Topo.__init__(self)
         
-        # Create a perfect binary tree of switches and hosts
-        self._add_nodes(depth)
+        # Create a perfect binary tree of switches
+        self._add_switches(depth)
         
-        # Connect the switches and hosts according to the binary tree structure
-        self._connect_nodes()
+        # Connect the switches according to the binary tree structure
+        self._connect_switches()
     
-    def _add_nodes(self, depth, node=None):
+    def _add_switches(self, depth, node=None):
         if node is None:
             node = create_perfect_binary_tree(depth)
         if node is not None:
-            if node.left is None and node.right is None:
-                host = self.addHost(f"h{node.val}")
-            else:
-                host = self.addSwitch(f"s{node.val}", cls=OVSSwitch)
-                self._add_nodes(depth-1, node.left)
-                self._add_nodes(depth-1, node.right)
-            self.nodes[node] = host
+            switch = self.addSwitch(f"s{node.val}")
+            self._add_switches(depth-1, node.left)
+            self._add_switches(depth-1, node.right)
     
-    def _connect_nodes(self, node=None):
+    def _connect_switches(self, node=None):
         if node is None:
             node = create_perfect_binary_tree(depth)
         if node is not None:
             if node.left is not None:
-                self.addLink(self.nodes[node], self.nodes[node.left])
-                self._connect_nodes(node.left)
+                self.addLink(f"s{node.val}", f"s{node.left.val}")
+                self._connect_switches(node.left)
             if node.right is not None:
-                self.addLink(self.nodes[node], self.nodes[node.right])
-                self._connect_nodes(node.right)
+                self.addLink(f"s{node.val}", f"s{node.right.val}")
+                self._connect_switches(node.right)
 
 
 class MeshTopo(Topo):
