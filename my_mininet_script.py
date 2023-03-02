@@ -14,7 +14,7 @@ class SingleSwitchTopo(Topo):
 
         hosts = [self.addHost(f'h{i+1}',cpu=.5/n) for i in range(n)]
         for j in range(n):
-            self.addLink(hosts[i], switch,bw=10, delay='5ms', loss=10, max_queue_size=1000)
+            self.addLink(hosts[j], switch,bw=10, delay='5ms', loss=10, max_queue_size=1000)
             
 class LinearTopo(Topo):
     def __init__(self,n=2,**opts):
