@@ -32,6 +32,26 @@ class LinearTopo(Topo):
             if i < n-1:
                 self.addLink(switches[i], switches[i+1], bw=10, delay='5ms', loss=10, max_queue_size=1000)
 
+class TreeTopo(Topo):
+    def __init__(self,n=2,**opts):
+        Topo.__init__(self,**opts)
+        
+        # Add switches to the topology
+        switches = [self.addSwitch(f's{i+1}') for i in range(n)]
+        
+        # Add hosts to the topology
+        hosts = [self.addHost(f'h{j+1}', cpu=.5/n) for j in range(n)]
+        
+        # Add links between the root switch and hosts
+        for h in hosts:
+            self.addLink(h, switches[0], bw=10, delay='5ms', loss=10, max_queue_size=1000)
+        
+        # Add links between switches
+        for i in range(n//2):
+            self.addLink(switches[i], switches[2*i+1], bw=10, delay='5ms', loss=10, max_queue_size=1000)
+            self.addLink(switches[i], switches[2*i+2], bw=10, delay='5ms', loss=10, max_queue_size=1000)
+
+
 
 def simpleTest():
     topo = SingleSwitchTopo(n=3)
