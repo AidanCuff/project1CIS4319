@@ -47,10 +47,9 @@ class TreeTopo(Topo):
                     host = self.addHost(f'h{2 * i + j + 1}')
                     self.addLink(host, parent, bw=10, delay='5ms', loss=10, max_queue_size=1000)
             else:
-                child = self.addSwitch(f's{(parent.dpid & 0xffff) << 8 | i + 1}')
+                child = self.addSwitch(f's{parent.name}-s{i+1}')
                 self.addLink(child, parent, bw=10, delay='5ms', loss=10, max_queue_size=1000)
                 self._add_tree(child, n - 1, child_count)
-
 
 
 class MeshTopo(Topo):
