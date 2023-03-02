@@ -54,15 +54,14 @@ class TreeTopo(Topo):
 
 
 def simpleTest():
-    term = sys.argv[1]
     if sys.argv[1] == "single":
-        topo = SingleSwitchTopo(sys.argv[2])
+        topo = SingleSwitchTopo(int(sys.argv[2]))
     if sys.argv[1] =="linear":
-            topo = LinearTopo(sys.argv[2])
+            topo = LinearTopo(int(sys.argv[2]))
     if sys.argv[1] =="tree":
-            topo = treeTopo(sys.argv[2])
+            topo = treeTopo(int(sys.argv[2]))
         #case "mesh":
-            #topo = SingleSwitchTopo(sys.argv[2])
+            #topo = SingleSwitchTopo(int(sys.argv[2]))
     else:
             print("unknown topology")
         
