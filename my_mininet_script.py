@@ -38,18 +38,20 @@ class TreeTopo(Topo):
         root_switch = self.addSwitch('s1')
         self._add_tree(root_switch, n, 2)
 
-    def _add_tree(self, parent, n, child_count):
+    def _add_tree(self, parent, n, child_count,host_count):
         if n == 0:
             return
+        hc = 0
         for i in range(1,child_count+1):
             if n == 1:
                 for j in range(2):
-                    host = self.addHost(f'h{2 * i + j + 1}')
+                    hc+=1
+                    host = self.addHost(f'h{hc}')
                     self.addLink(host, parent, bw=10, delay='5ms', loss=10, max_queue_size=1000)
             else:
                 child = self.addSwitch(f's{i+1}')
                 self.addLink(child, parent, bw=10, delay='5ms', loss=10, max_queue_size=1000)
-                self._add_tree(child, n - 1, child_count)
+                self._add_tree(child, n - 1, child_count,host_count+hc)
 
 
 class MeshTopo(Topo):
