@@ -33,8 +33,11 @@ class LinearTopo(Topo):
                 self.addLink(switches[i], switches[i+1], bw=10, delay='5ms', loss=10, max_queue_size=1000)
                 
 class Node:
-    def __init__(self, val):
-        self.val = val
+    count = 0
+    
+    def __init__(self):
+        Node.count += 1
+        self.val = Node.count
         self.left = None
         self.right = None
         self.hosts = []
