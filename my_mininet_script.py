@@ -31,59 +31,32 @@ class LinearTopo(Topo):
             self.addLink(hosts[i], switches[i], bw=10, delay='5ms', loss=10, max_queue_size=1000)
             if i < n-1:
                 self.addLink(switches[i], switches[i+1], bw=10, delay='5ms', loss=10, max_queue_size=1000)
-                
-class Node:
-    count = 0
-    
-    def __init__(self):
-        Node.count += 1
-        self.val = Node.count
-        self.left = None
-        self.right = None
-        self.hosts = []
-
-def create_perfect_binary_tree(depth):
-    if depth == 0:
-        return None
-    root = Node("X")
-    root.left = create_perfect_binary_tree(depth-1)
-    root.right = create_perfect_binary_tree(depth-1)
-    return root
+                 
 
 class TreeTopo(Topo):
     def __init__(self, depth):
         Topo.__init__(self)
         
-        # Create a perfect binary tree of switches
-        self._add_switches(depth)
-        
-        # Connect the switches according to the binary tree structure
-        self._connect_switches(depth)
-    
-    def _add_switches(self, depth, node=None):
-        if node is None:
-            node = create_perfect_binary_tree(depth)
-        if node is not None:
-            switch = self.addSwitch(f"s{node.val}")
-            self._add_switches(depth-1, node.left)
-            self._add_switches(depth-1, node.right)
-    
-    def _connect_switches(self, depth, node=None):
-        if node is None:
-            node = create_perfect_binary_tree(depth)
-        if node is not None:
-            if node.left is not None:
-                self.addLink(f"s{node.val}", f"s{node.left.val}", bw=10, delay='5ms', loss=10, max_queue_size=1000)
-                self._connect_switches(depth-1, node.left)
-            if node.right is not None:
-                self.addLink(f"s{node.val}", f"s{node.right.val}", bw=10, delay='5ms', loss=10, max_queue_size=1000)
-                self._connect_switches(depth-1, node.right)
-
-        # Add hosts to the final layer of switches
-        if depth == 1:
-            for i in range(len(node.hosts)):
-                host = self.addHost(f"h{i}")
-                self.addLink(f"s{node.val}", f"h{i}", bw=10, delay='5ms', loss=10, max_queue_size=1000)
+        s_count = 1
+        h_count = 1
+        snh = []
+        for i in range(depth+1):
+            for j in range(2**i):
+                if i == depth:
+                    snh.append(self.addHost(f'h{h_count}', cpu=.5/n))
+                    h_count +=1
+                else:
+                    snh.append(self.addSwitch(f's{s_count}'))
+                    s_count +=1
+        print(snh)
+        a = 1
+        b = 2
+        for i in range((2**(depth+1)-1)//2):
+            self.addLink(snh[i],snh[a], bw=10, delay='5ms', loss=10, max_queue_size=1000)
+            self.addLink(snh[i],snh[b], bw=10, delay='5ms', loss=10, max_queue_size=1000)
+            a = b
+            b += 1
+            
 
 
 class MeshTopo(Topo):
