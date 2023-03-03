@@ -8,8 +8,8 @@ import sys
 
 
 class SingleSwitchTopo(Topo):
-    def __init__(self,n=2,**opts):
-        Topo.__init__(self,**opts)
+    def __init__(self,n):
+        Topo.__init__(selfn)
         switch = self.addSwitch('s1')
 
         hosts = [self.addHost(f'h{i+1}',cpu=.5/n) for i in range(n)]
@@ -17,8 +17,8 @@ class SingleSwitchTopo(Topo):
             self.addLink(hosts[j], switch,bw=10, delay='5ms', loss=10, max_queue_size=1000)
             
 class LinearTopo(Topo):
-    def __init__(self,n=2,**opts):
-        Topo.__init__(self,**opts)
+    def __init__(self,n):
+        Topo.__init__(self)
         
         # Add switches to the topology
         switches = [self.addSwitch(f's{i+1}') for i in range(n)]
