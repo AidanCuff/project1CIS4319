@@ -59,8 +59,8 @@ class TreeTopo(Topo):
 
 
 class MeshTopo(Topo):
-    def __init__(self,n=2,**opts):
-        Topo.__init__(self,**opts)
+    def __init__(self,n):
+        Topo.__init__(self,n)
         
         # Add switches to the topology
         switches = [self.addSwitch(f's{i+1}') for i in range(n)]
