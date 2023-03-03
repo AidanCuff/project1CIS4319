@@ -80,11 +80,11 @@ class MeshTopo(Topo):
 def simpleTest():
     if sys.argv[1] == "single":
         topo = SingleSwitchTopo(int(sys.argv[2]))
-    if sys.argv[1] =="linear":
+    elif sys.argv[1] =="linear":
             topo = LinearTopo(int(sys.argv[2]))
-    if sys.argv[1] =="tree":
+    elif sys.argv[1] =="tree":
             topo = TreeTopo(int(sys.argv[2]))
-    if sys.argv[1] =="mesh":
+    elif sys.argv[1] =="mesh":
             topo = MeshTopo(int(sys.argv[2]))
     else:
             print("unknown topology")
