@@ -52,8 +52,8 @@ class TreeTopo(Topo):
         a = 1
         b = 2
         for i in range((2**(depth+1)-1)//2):
-            self.addLink(snh[i],snh[a], bw=10, delay='5ms', loss=10, max_queue_size=1000)
-            self.addLink(snh[i],snh[b], bw=10, delay='5ms', loss=10, max_queue_size=1000)
+            self.addLink(snh[i],snh[a+i], bw=10, delay='5ms', loss=10, max_queue_size=1000)
+            self.addLink(snh[i],snh[b+i], bw=10, delay='5ms', loss=10, max_queue_size=1000)
             a = b
             b += 1
             
