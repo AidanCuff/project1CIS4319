@@ -9,7 +9,7 @@ import sys
 
 class SingleSwitchTopo(Topo):
     def __init__(self,n):
-        Topo.__init__(selfn)
+        Topo.__init__(self,n)
         switch = self.addSwitch('s1')
 
         hosts = [self.addHost(f'h{i+1}',cpu=.5/n) for i in range(n)]
