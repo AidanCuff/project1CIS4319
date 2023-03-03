@@ -41,7 +41,7 @@ class TreeTopo(Topo):
         b = 2
         s_count = 2
         h_count =1
-        snh = [self.addSwtich('s1')]
+        snh = [self.addSwitch('s1')]
         for i in range((2**(depth+1)-1)//2):
             if i >= ((2**depth)//2)-1:
                 snh.append(self.addHost(f'h{h_count}', cpu=.5/depth))
@@ -49,8 +49,8 @@ class TreeTopo(Topo):
                 h_count += 2
                 
             else:
-                snh.append(self.addSwitch(f'h{s_count}'))
-                snh.append(self.addSwitch(f'h{s_count+1}'))
+                snh.append(self.addSwitch(f's{s_count}'))
+                snh.append(self.addSwitch(f's{s_count+1}'))
                 s_count += 2
                 
             self.addLink(snh[i],snh[a+i], bw=10, delay='5ms', loss=10, max_queue_size=1000)
