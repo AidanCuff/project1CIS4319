@@ -37,6 +37,7 @@ class Node:
         self.val = val
         self.left = None
         self.right = None
+        self.hosts = []
 
 def create_perfect_binary_tree(depth):
     if depth == 0:
