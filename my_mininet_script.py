@@ -48,7 +48,6 @@ class TreeTopo(Topo):
                 else:
                     snh.append(self.addSwitch(f's{s_count}'))
                     s_count +=1
-        print(snh)
         a = 1
         b = 2
         for i in range((2**(depth+1)-1)//2):
