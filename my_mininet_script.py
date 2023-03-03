@@ -73,10 +73,10 @@ class TreeTopo(Topo):
             node = create_perfect_binary_tree(depth)
         if node is not None:
             if node.left is not None:
-                self.addLink(f"s{node.val}", f"s{node.left.val}, bw=10, delay='5ms', loss=10, max_queue_size=1000)
+                self.addLink(f"s{node.val}", f"s{node.left.val}", bw=10, delay='5ms', loss=10, max_queue_size=1000)
                 self._connect_switches(depth-1, node.left)
             if node.right is not None:
-                self.addLink(f"s{node.val}", f"s{node.right.val}, bw=10, delay='5ms', loss=10, max_queue_size=1000)
+                self.addLink(f"s{node.val}", f"s{node.right.val}", bw=10, delay='5ms', loss=10, max_queue_size=1000)
                 self._connect_switches(depth-1, node.right)
 
         # Add hosts to the final layer of switches
