@@ -14,7 +14,7 @@ class SingleSwitchTopo(Topo):
 
         hosts = [self.addHost(f'h{i+1}',cpu=.5/n) for i in range(n)]
         for j in range(n):
-            self.addLink(hosts[j], switch,bw=10, delay='5ms', loss=10, max_queue_size=1000)
+            self.addLink(hosts[j], switch, cls=TCLink, bw=10, delay='5ms', loss=10, max_queue_size=1000)
             
 class LinearTopo(Topo):
     def __init__(self,n):
@@ -28,9 +28,9 @@ class LinearTopo(Topo):
         
         # Add links between the switches and hosts
         for i in range(n):
-            self.addLink(hosts[i], switches[i], bw=10, delay='5ms', loss=10, max_queue_size=1000)
+            self.addLink(hosts[i], switches[i], cls=TCLink, bw=10, delay='5ms', loss=10, max_queue_size=1000)
             if i < n-1:
-                self.addLink(switches[i], switches[i+1], bw=10, delay='5ms', loss=10, max_queue_size=1000)
+                self.addLink(switches[i], switches[i+1], cls=TCLink, bw=10, delay='5ms', loss=10, max_queue_size=1000)
                  
 
 class TreeTopo(Topo):
@@ -53,8 +53,8 @@ class TreeTopo(Topo):
                 snh.append(self.addSwitch(f's{s_count+1}'))
                 s_count += 2
                 
-            self.addLink(snh[i],snh[a+i], bw=10, delay='5ms', loss=10, max_queue_size=1000)
-            self.addLink(snh[i],snh[b+i], bw=10, delay='5ms', loss=10, max_queue_size=1000)
+            self.addLink(snh[i],snh[a+i], cls=TCLink, bw=10, delay='5ms', loss=10, max_queue_size=1000)
+            self.addLink(snh[i],snh[b+i], cls=TCLink, bw=10, delay='5ms', loss=10, max_queue_size=1000)
             a, b = b, b+1
             
 
@@ -70,12 +70,12 @@ class MeshTopo(Topo):
         
         # Add links between hosts and switches
         for i in range(n):
-            self.addLink(hosts[i], switches[i], bw=10, delay='5ms', loss=10, max_queue_size=1000)
+            self.addLink(hosts[i], switches[i], cls=TCLink, bw=10, delay='5ms', loss=10, max_queue_size=1000)
         
         # Add links between switches
         for i in range(n):
             for j in range(i+1, n):
-                self.addLink(switches[i], switches[j], bw=10, delay='5ms', loss=10, max_queue_size=1000)
+                self.addLink(switches[i], switches[j], cls=TCLink, bw=10, delay='5ms', loss=10, max_queue_size=1000)
 
 
 def simpleTest():
