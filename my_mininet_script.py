@@ -37,12 +37,10 @@ class TreeTopo(Topo):
     def __init__(self, depth):
         Topo.__init__(self,depth)
         
-        a = 1
-        b = 2
-        s_count = 2
-        h_count =1
-        snh = [self.addSwitch('s1')]
+        a, b, s_count, h_count, snh = 1, 2, 2, 1, [self.addSwitch('s1')]
+        
         for i in range((2**(depth+1)-1)//2):
+            
             if i >= ((2**depth)//2)-1:
                 snh.append(self.addHost(f'h{h_count}', cpu=.5/depth))
                 snh.append(self.addHost(f'h{h_count+1}', cpu=.5/depth))
@@ -55,8 +53,7 @@ class TreeTopo(Topo):
                 
             self.addLink(snh[i],snh[a+i], bw=10, delay='5ms', loss=10, max_queue_size=1000)
             self.addLink(snh[i],snh[b+i], bw=10, delay='5ms', loss=10, max_queue_size=1000)
-            a = b
-            b += 1
+            a, b = b, b+1
             
 
 
