@@ -37,7 +37,11 @@ class TreeTopo(Topo):
     def __init__(self, depth):
         Topo.__init__(self,depth)
         
-        a = 1, b = 2, s_count = 2, h_count =1, snh = [self.addSwtich('s1')]
+        a = 1
+        b = 2
+        s_count = 2
+        h_count =1
+        snh = [self.addSwtich('s1')]
         for i in range((2**(depth+1)-1)//2):
             if i >= ((2**depth)//2)-1:
                 snh.append(self.addHost(f'h{h_count}', cpu=.5/depth))
