@@ -37,8 +37,10 @@ class TreeTopo(Topo):
     def __init__(self, depth):
         Topo.__init__(self,depth)
         
+        #Assign variables, add root switch
         a, b, s_count, h_count, snh = 1, 2, 2, 1, [self.addSwitch('s1')]
         
+        #Construct tree and add links
         for i in range((2**(depth+1)-1)//2):
             
             if i >= ((2**depth)//2)-1:
