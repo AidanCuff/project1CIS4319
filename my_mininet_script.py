@@ -90,7 +90,7 @@ def simpleTest():
     else:
             print("unknown topology")
         
-    net = Mininet(topo)
+    net = Mininet(topo, link = TCLink)
     net.start()
     print("dumping host connections")
     dumpNodeConnections(net.hosts)
