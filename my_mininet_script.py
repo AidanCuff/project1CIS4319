@@ -30,7 +30,7 @@ class LinearTopo(Topo):
         for i in range(n):
             self.addLink(hosts[i], switches[i], bw=10, delay='5ms', loss=10, max_queue_size=1000)
             if i < n-1:
-                self.addLink(switches[i], bw=10, delay='5ms', loss=10, max_queue_size=1000)
+                self.addLink(switches[i], switches[i+1], bw=10, delay='5ms', loss=10, max_queue_size=1000)
                  
 
 class TreeTopo(Topo):
