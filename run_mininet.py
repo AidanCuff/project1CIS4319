@@ -97,8 +97,8 @@ with open('output.txt', 'w') as sys.stdout:
         print("\n Testing network connectivity: \n")
         net.pingAll();
         print("\n Testing all pairwise bandwiths between hosts: \n")
-        for i in range(len(net.hosts):
-                for j in range(i+1, len(net.hosts):
+        for i in range(len(net.hosts)):
+                for j in range(i+1, len(net.hosts)):
                     net.iperf((net.get(f'h{i+1}'),net.get(f'h{j+1}')))
         print("\n Stopping Network \n")
         net.stop()
