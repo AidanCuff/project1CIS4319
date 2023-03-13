@@ -78,7 +78,7 @@ class MeshTopo(Topo):
             self.addLink(hosts[i], switches[i], bw=10, delay='5ms', loss=10, max_queue_size=1000)
 
 
-def simpleTest():
+def perfTest():
     if sys.argv[1] == "single":
         topo = SingleSwitchTopo(int(sys.argv[2]))
     elif sys.argv[1] =="linear":
@@ -90,18 +90,19 @@ def simpleTest():
     else:
             print("unknown topology")
         
-    net = Mininet(topo, controller=Controller, host = CPULimitedHost, link = TCLink)
+    net = Mininet(topo, host = CPULimitedHost, link = TCLink)
     net.start()
-    print("dumping host connections")
+    print("\n dumping host connections: \n")
     dumpNodeConnections(net.hosts)
-    print("Testing network connectivity")
+    print("\n Testing network connectivity: \n")
     net.pingAll();
+    print("\n Testing all pairwise bandwiths between hosts: \n")
     for i in range(len(net.hosts):
             for j in range(i+1, len(net.hosts):
-                net.iperf(f'h{i+1},f'h{j+1})
-        
+                net.iperf((net.get(f'h{i+1}'),net.get(f'h{j+1}')))
+    print("\n Stopping Network \n")
     net.stop()
 
 if __name__=='__main__':
     setLogLevel('info')
-    simpleTest()
+    perfTest()
