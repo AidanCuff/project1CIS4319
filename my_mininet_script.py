@@ -96,6 +96,10 @@ def simpleTest():
     dumpNodeConnections(net.hosts)
     print("Testing network connectivity")
     net.pingAll();
+    for i in range(len(net.hosts):
+            for j in range(i+1, len(net.hosts):
+                net.iperf(f'h{i+1},f'h{j+1})
+        
     net.stop()
 
 if __name__=='__main__':
